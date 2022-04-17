@@ -1,0 +1,81 @@
+create database store;
+
+    create table countries(
+        code int,
+        name varchar(20),
+        continent_name varchar(20) not null,
+        primary key(code),
+        unique(name)
+    );
+
+    create table users(
+        id int,
+        full_name varchar(20),
+        email varchar(20),
+        gender char(1),
+        date_of_birth varchar(15),
+        created_at datetime default current_date,
+        country_code int,
+        PRIMARY KEY (id),
+        FOREIGN KEY (country_code) REFERENCES countries(code)
+            ON DELETE CASCADE,
+        unique (email),
+        check (gender in ('m', 'f'))
+    );
+
+    create table orders(
+        id int,
+        user_id int,
+        status varchar(6),
+        created_at datetime default current_date,
+        PRIMARY KEY (id),
+        FOREIGN KEY (user_id) REFERENCES users(id)
+            ON DELETE CASCADE,
+        check (status in ('start','finish'))
+    );
+
+    create table order_products(
+        order_id int,
+        product_id int,
+        quantity int default 0,
+        FOREIGN KEY (order_id) REFERENCES orders(id)
+            ON DELETE CASCADE,
+        FOREIGN KEY (product_id) REFERENCES products(id)
+            ON DELETE CASCADE
+    );
+
+    create table products(
+        id int,
+        name varchar(10) not null,
+        price int default 0,
+        status varchar(10),
+        created_at datetime default current_date,
+        check (status in ('valid','expired')),
+        primary key (id)
+    );
+
+-- DML commands
+-- Add new row to the countries table.
+insert into countries values(0011,'SA','Asia');
+
+-- Add new row to the users table.
+insert into users values(1, 'Noura','nourah@a.com','F','17 Nov 1995',current_date,0011);
+
+-- Add new row to the orders table.
+insert into orders values(0001,1,'start',current_date);
+
+-- Add new row to the products table.
+insert into order_products values(0001,101,2);
+
+-- Add new row to the order_products table.
+insert into products values(101,'Iphone 13',999,'valid', current_date);
+insert into products values(102,'Ipad',1599,'valid', current_date);
+
+-- Update row from countries table.
+UPDATE countries
+SET name = 'Saudi Arabia'
+WHERE code = 0011;
+
+-- Delete row from products table.
+delete from products where id = 102;
+
